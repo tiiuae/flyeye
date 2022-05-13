@@ -1,0 +1,24 @@
+{{template "partials/header" .}}
+<h2>Control Interface</h2>
+<p><b>Status:</b> Standby</p>
+<div class="col-5">
+  <form method="post">
+    <input type="hidden" name="action" value="start"></input>
+    <button type="submit" class="btn">Start recording ⏺</button>
+  </form>
+</div>
+<h3 id="c">Clients</h3>
+<p><a href="/" class="btn">Refresh ✦</a></p>
+<div class="entry">
+  <u>Client A</u>
+  <div class="meta">
+    <p>Connected</p>
+  </div>
+</div>
+<div class="entry">
+  <u>Client B</u>
+  <div class="meta">
+    <p>Failed</p>
+  </div>
+</div>
+{{template "partials/footer" .}}
