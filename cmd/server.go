@@ -20,6 +20,7 @@ var serverCmd = &cobra.Command{
 
 func Serve(cmd *cobra.Command, args []string) {
 	clientsmgr.LoadConfig()
+	clientsmgr.SetupCron()
 	engine := html.New("./templates", ".html")
 	app := fiber.New(fiber.Config{
 		Views: engine,
@@ -27,6 +28,7 @@ func Serve(cmd *cobra.Command, args []string) {
 
 	app.Static("/", "./static")
 	app.Get("/", routes.HomepageHandler)
+	app.Post("/", routes.PostHomepageHandler)
 	
 	log.Fatal(app.Listen(":3000"))
 }

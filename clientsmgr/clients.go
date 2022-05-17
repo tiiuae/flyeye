@@ -3,9 +3,21 @@ package clientsmgr
 import (
 	"net/http"
 	"errors"
+	"sync"
+	"time"
 	"fmt"
 	"strings"
 	"io/ioutil"
+
+	"github.com/robfig/cron/v3"
+)
+
+type SystemState int64
+
+const (
+	SystemStandby SystemState = iota
+	SystemRecording
+	SystemStitching
 )
 
 type ClientState int64
@@ -28,6 +40,7 @@ const (
 )
 
 var LoadedClients []Client
+var CurrentSystemState SystemState
 
 // Client represents a client state, and contains a copy of the client
 // configuration that is loaded.
@@ -41,32 +54,54 @@ type Client struct {
 // Connect attempts to load all clients defined in the configuration
 // file, and populates 
 func Connect() {
-	for _, c := range LoadedClients {
-		uri:= c.Config.IP+":"+c.Config.Port
-		resp, err := http.Get(uri + "/client/"+Config.APIKey+"/state")
-		if err != nil {
-			continue
-		}
-		switch resp.StatusCode {
-		case http.StatusOK:
-			body, err := ioutil.ReadAll(resp.Body)
-			if err != nil{
-				c.State = ConnectionFailed
-				c.StateErr = fmt.Errorf("Cannot read status body: %w", err)
-				continue
+	wg :=new(sync.WaitGroup)
+	wg.Add(len(LoadedClients))
+	for i, c := range LoadedClients {
+		go func(i int, c Client) {
+			defer wg.Done()
+			uri:= "http://"+ c.Config.IP+":"+c.Config.Port
+			client := http.Client{
+				Timeout: 1 * time.Second,
 			}
-			switch strings.TrimSpace(string(body)) {
-			case "standby":
-				c.State = ConnectedStandby
-				c.StateErr = nil
-			case "recording":
-				c.State = ConnectedRecording
-				c.StateErr = nil
+			resp, err := client.Get(uri + "/client/"+Config.APIKey+"/state")
+			if err != nil {
+				LoadedClients[i].State = ConnectionFailed
+				LoadedClients[i].StateErr = fmt.Errorf("cannot connect: %w", err)
+				return
 			}
-			
-		case http.StatusForbidden:
-			c.State = ConnectionFailed
-			c.StateErr = errors.New("return status forbidden, is API key correct?")
-		}
+			switch resp.StatusCode {
+			case http.StatusOK:
+				body, err := ioutil.ReadAll(resp.Body)
+				if err != nil{
+					LoadedClients[i].State = ConnectionFailed
+					LoadedClients[i].StateErr = fmt.Errorf("cannot read status body: %w", err)
+
+					return
+				}
+				switch strings.TrimSpace(string(body)) {
+				case "standby":
+					LoadedClients[i].State = ConnectedStandby
+					LoadedClients[i].StateErr = nil
+				case "recording":
+					LoadedClients[i].State = ConnectedRecording
+					LoadedClients[i].StateErr = nil
+				}
+
+			case http.StatusForbidden:
+				LoadedClients[i].State = ConnectionFailed
+				LoadedClients[i].StateErr = errors.New("return status forbidden, is API key correct?")
+			}
+		}(i, c)
 	}
+	wg.Wait()
+}
+
+func SetupCron() {
+	c := cron.New()
+	c.AddFunc("@every 5s", Connect)
+	c.Start()
+}
+
+func StartRecording() {
+
 }

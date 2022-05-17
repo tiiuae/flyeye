@@ -6,6 +6,7 @@ require (
 	github.com/BurntSushi/toml v0.3.1
 	github.com/gofiber/fiber/v2 v2.33.0
 	github.com/gofiber/template v1.6.27
+	github.com/robfig/cron/v3 v3.0.1
 	github.com/sethvargo/go-password v0.2.0
 	github.com/spf13/cobra v1.4.0
 )

@@ -9,16 +9,20 @@
 </div>
 <h3 id="c">Clients</h3>
 <p><a href="/" class="btn">Refresh ✦</a></p>
+{{range .Clients}}
 <div class="entry">
-  <u>Client A</u>
+  <u>{{.Config.ClientName}}</u>
   <div class="meta">
-    <p>Connected</p>
+	<p>
+	  {{if eq .State 1}}Cannot connect: {{.StateErr}}
+	  {{else if eq .State 2}}Standby
+	  {{else if eq .State 3}}Recording
+	  {{else if eq .State 4}}Recording failed: {{.StateErr}}
+	  {{else if eq .State 0}}Disconnected (inactive)
+	  {{end}}
+    </p>
+    <p></p>
   </div>
 </div>
-<div class="entry">
-  <u>Client B</u>
-  <div class="meta">
-    <p>Failed</p>
-  </div>
-</div>
+{{end}}
 {{template "partials/footer" .}}

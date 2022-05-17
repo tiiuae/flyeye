@@ -86,4 +86,10 @@ func LoadConfig() {
 			os.Exit(0)
 		}
 	}
+
+	for _, c := range Config.Clients {
+		LoadedClients = append(LoadedClients, Client{
+			Config: c,
+		})
+	}
 }
