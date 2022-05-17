@@ -2,13 +2,13 @@ package routes
 
 import (
 	"fmt"
-	
+
 	"github.com/gofiber/fiber/v2"
 
 	"github.com/tiiuae/flyeye/clientsmgr"
 )
 
-func HomepageHandler (c *fiber.Ctx) error {
+func HomepageHandler(c *fiber.Ctx) error {
 	return c.Render("index", fiber.Map{
 		"Clients": clientsmgr.LoadedClients,
 	})
@@ -19,6 +19,8 @@ func PostHomepageHandler(c *fiber.Ctx) error {
 	switch c.FormValue("action") {
 	case "start": // start recording
 		clientsmgr.StartRecording()
+	case "refresh": // refresh clients info
+		clientsmgr.Connect()
 	}
-	return nil
+	return c.Redirect("/")
 }

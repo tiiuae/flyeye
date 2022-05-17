@@ -4,10 +4,10 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/sethvargo/go-password/password"
 
+	"bytes"
+	"io/ioutil"
 	"log"
 	"os"
-	"io/ioutil"
-	"bytes"
 )
 
 var (
@@ -31,12 +31,12 @@ func init() {
 // (server) part of the application.
 type Configuration struct {
 	WebPort string
-	APIKey string
+	APIKey  string
 	Clients []ClientConfig
 }
 
 type ClientConfig struct {
-	IP, Port string
+	IP, Port   string
 	ClientName string
 }
 
@@ -45,24 +45,23 @@ func newConfiguration() Configuration {
 	if err != nil {
 		panic(err)
 	}
-	return Configuration {
+	return Configuration{
 		WebPort: "8080",
-		APIKey: res,
+		APIKey:  res,
 		Clients: []ClientConfig{
 			{
-				IP: "10.0.0.25",
-				Port: "6457",
+				IP:         "10.0.0.25",
+				Port:       "6457",
 				ClientName: "Camera A",
 			},
 			{
-				IP: "10.0.0.26",
-				Port: "6457",
+				IP:         "10.0.0.26",
+				Port:       "6457",
 				ClientName: "Camera B",
 			},
 		},
 	}
 }
-
 
 // LoadConfig loads the configuration file from disk. It will also generate one
 // if it doesn't exist.

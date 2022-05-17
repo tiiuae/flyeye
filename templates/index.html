@@ -8,7 +8,10 @@
   </form>
 </div>
 <h3 id="c">Clients</h3>
-<p><a href="/" class="btn">Refresh ✦</a></p>
+  <form method="post">
+    <input type="hidden" name="action" value="refresh"></input>
+    <button type="submit" class="btn">Refresh ✦</button>
+  </form>
 {{range .Clients}}
 <div class="entry">
   <u>{{.Config.ClientName}}</u>
