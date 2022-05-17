@@ -9,5 +9,5 @@ func HomepageHandler (c *fiber.Ctx) error {
 }
 
 func PostHomepageHandler(c *fiber.Ctx) error {
-	
+	return nil
 }

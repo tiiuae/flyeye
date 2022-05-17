@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/tiiuae/flyeye/routes"
+	"github.com/tiiuae/flyeye/clientsmgr"
 
 	"github.com/spf13/cobra"
 	"github.com/gofiber/fiber/v2"
@@ -18,6 +19,7 @@ var serverCmd = &cobra.Command{
 }
 
 func Serve(cmd *cobra.Command, args []string) {
+	clientsmgr.LoadConfig()
 	engine := html.New("./templates", ".html")
 	app := fiber.New(fiber.Config{
 		Views: engine,
