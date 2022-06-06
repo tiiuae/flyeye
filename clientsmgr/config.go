@@ -23,7 +23,12 @@ func init() {
 	var err error
 	WorkingDir, err = os.Getwd()
 	if err != nil {
-		log.Fatal("Cannot get working directory!", err)
+		log.Fatal("Cannot get working directory! ", err)
+	}
+
+	err = os.MkdirAll(WorkingDir + "/downloads", 0750)
+	if err != nil && !os.IsExist(err) {
+		log.Fatal("Cannot create downloads directory! ", err)
 	}
 }
 
